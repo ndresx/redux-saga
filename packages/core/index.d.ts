@@ -1,13 +1,8 @@
 import { Action, Middleware } from "redux";
+import { Buffer, Channel, END, SagaIterator, Task } from "@redux-saga/types";
 import { Effect, ForkEffect } from "./effects";
 
-export { Effect };
-
-/**
- * Annotate return type of generators with `SagaIterator` to get strict
- * type-checking of yielded effects.
- */
-export type SagaIterator = IterableIterator<Effect>;
+export { Buffer, Channel, Effect, END, SagaIterator, Task };
 
 type Saga0 = () => Iterator<any>;
 type Saga1<T1> = (arg1: T1) => Iterator<any>;
@@ -66,15 +61,12 @@ export interface SagaMiddleware<C = {}> extends Middleware {
 
 export type Logger = (level: string, ...args: any[]) => void;
 
-export type Emit<T> = (input: T) => void;
-
 export interface SagaMiddlewareOptions<C extends object = {}> {
   context?: C;
   sagaMonitor?: Monitor;
   logger?: Logger;
   onError?(error: Error): void;
   effectMiddlewares?: EffectMiddleware[];
-  emitter?(emit: Emit<Action>): Emit<any>;
 }
 
 export default function sagaMiddlewareFactory<C extends object>(
@@ -123,28 +115,9 @@ export function runSaga<A, S, T1, T2, T3, T4, T5, T6>(
 
 
 export const CANCEL: string;
-
-export type END = {type: '@@redux-saga/CHANNEL_END'};
 export const END: END;
 
 export type Predicate<T> = (arg: T) => boolean;
-
-export interface Task {
-  isRunning(): boolean;
-  isCancelled(): boolean;
-  result<T = any>(): T | undefined;
-  error(): any | undefined;
-  toPromise<T = any>(): Promise<T>;
-  cancel(): void;
-  setContext<C extends object>(props: Partial<C>): void;
-}
-
-export interface Buffer<T> {
-  isEmpty(): boolean;
-  put(message: T): void;
-  take(): T | undefined;
-  flush(): T[];
-}
 
 export interface TakeableChannel<T> {
   take(cb: (message: T | END) => void): void;
@@ -156,13 +129,6 @@ export interface PuttableChannel<T> {
 
 export interface FlushableChannel<T> {
   flush(cb: (items: T[] | END) => void): void;
-}
-
-export interface Channel<T> {
-  take(cb: (message: T | END) => void): void;
-  put(message: T | END): void;
-  flush(cb: (items: T[] | END) => void): void;
-  close(): void;
 }
 
 export function channel<T>(buffer?: Buffer<T>): Channel<T>;
