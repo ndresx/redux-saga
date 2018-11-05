@@ -1293,6 +1293,7 @@ For testing purpose only.
 This is useful when you want to test different branch of a saga without having to replay the actions that lead to it.
 
 ```javascript
+import { cloneableGenerator } from '@redux-saga/testing-utils';
 
 function* oddOrEven() {
   // some stuff are done here
